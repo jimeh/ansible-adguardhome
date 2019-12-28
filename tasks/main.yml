@@ -1,0 +1,113 @@
+---
+- include_tasks: setup_debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: setup_redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Ensure user exists
+  user:
+    name: "{{ adguardhome_user }}"
+    create_home: no
+    system: "{{ adguardhome_system_user }}"
+    state: present
+
+- name: Check if binary is installed
+  stat:
+    path: "{{ adguardhome_bin_file }}"
+  register: adguardhome_binary_check
+
+- name: Check version of installed binary
+  shell: >-
+    set -o pipefail
+    && "{{ adguardhome_bin_file }}" -c /dev/null --check-config 2>&1
+    | grep -m 1 -E 'v[0-9.]+' -o
+  args:
+    executable: /bin/bash
+  register: adguardhome_version_check
+  check_mode: no
+  changed_when: >-
+    adguardhome_version_check.stdout.find('v' + adguardhome_version) == -1
+  failed_when: >-
+    adguardhome_version_check.rc != 0 and adguardhome_version_check.rc != 141
+  when: >-
+    adguardhome_binary_check.stat.exists
+
+- name: Install binary
+  block:
+    - name: Ensure bin directory exists
+      file:
+        dest: "{{ adguardhome_bin_dir }}"
+        recurse: yes
+        state: directory
+    - name: Create temporary directory
+      file:
+        dest: "{{ adguardhome_unpack_dir }}"
+        recurse: yes
+        state: directory
+    - name: "Download and extract {{ adguardhome_arch }} archive"
+      unarchive:
+        src: "{{ adguardhome_download_url }}"
+        dest: "{{ adguardhome_unpack_dir }}"
+        remote_src: yes
+        extra_opts:
+          - "--strip-components=1"
+    - name: "Copy binary to {{ adguardhome_bin_dir }}/"
+      copy:
+        src: "{{ adguardhome_unpack_dir }}/{{ adguardhome_bin_name }}"
+        dest: "{{ adguardhome_bin_file }}"
+        mode: "755"
+        remote_src: yes
+    - name: Remove temporary directory
+      file:
+        path: "{{ adguardhome_unpack_dir }}"
+        state: absent
+  when: >-
+    adguardhome_version_check.changed
+    or (not adguardhome_binary_check.stat.exists)
+
+- name: Ensure data directory exists and has correct permissions
+  file:
+    path: "{{ adguardhome_data_dir }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "755"
+    recurse: yes
+    state: directory
+
+- name: Ensure config directory exists and has correct permissions
+  file:
+    path: "{{ adguardhome_config_dir }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "755"
+    recurse: yes
+    state: directory
+
+- name: Allow binary to bind to ports lower than 1024 as a non-root user
+  capabilities:
+    path: "{{ adguardhome_bin_file }}"
+    capability: CAP_NET_BIND_SERVICE=+eip
+    state: present
+  when: >-
+    adguardhome_user != "root"
+
+- name: Disallow binary to bind to ports lower than 1024 as a non-root user
+  capabilities:
+    path: "{{ adguardhome_bin_file }}"
+    capability: CAP_NET_BIND_SERVICE=+eip
+    state: absent
+  when: >-
+    adguardhome_user == "root"
+
+- name: Install sytemd service
+  template:
+    src: adguardhome.service.j2
+    dest: /etc/systemd/system/adguardhome.service
+    mode: "755"
+  notify: restart adguardhome
+
+- name: Ensure service is enabled
+  service:
+    name: adguardhome
+    enabled: yes

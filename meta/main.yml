@@ -1,0 +1,21 @@
+---
+dependencies: []
+galaxy_info:
+  author: Jim Myhrberg
+  description: Install AdGuard Home
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: Ubuntu
+      versions:
+        - bionic
+        - xenial
+    - name: EL
+      versions:
+        - 7
+        - 8
+  galaxy_tags:
+    - adblocking
+    - adguard
+    - dns
+    - networking

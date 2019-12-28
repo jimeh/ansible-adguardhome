@@ -1,0 +1,5 @@
+---
+- name: Install dependencies
+  package:
+    name: libcap
+    state: present
