@@ -8,16 +8,19 @@ FROM {{ item.image }}
 
 RUN if [ $(command -v apt-get) ]; then \
         apt-get update && \
-        apt-get install -y python sudo bash ca-certificates net-tools && \
+        apt-get install -y python python-pip sudo bash ca-certificates \
+                net-tools && \
         apt-get clean; \
     elif [ $(command -v dnf) ]; then \
         dnf makecache && \
         dnf --assumeyes install \
-            sudo python3 *python-devel python*-dnf bash net-tools && \
+            sudo python3 python3-pip *python-devel python*-dnf bash \
+            net-tools && \
         dnf clean all; \
     elif [ $(command -v yum) ]; then \
         yum makecache fast && \
-        yum install -y python3 sudo yum-plugin-ovl bash net-tools && \
+        yum install -y python3 python3-pip sudo yum-plugin-ovl bash \
+            net-tools && \
         sed -i 's/plugins=0/plugins=1/g' /etc/yum.conf && \
         yum clean all; \
     elif [ $(command -v zypper) ]; then \

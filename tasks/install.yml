@@ -1,0 +1,33 @@
+---
+- name: Ensure bin directory exists
+  file:
+    dest: "{{ adguardhome_bin_dir }}"
+    recurse: yes
+    state: directory
+
+- name: Create temporary directory
+  file:
+    dest: "{{ adguardhome_unpack_dir }}"
+    recurse: yes
+    state: directory
+
+- name: "Download and extract archive (v{{ adguardhome_version }} / {{ adguardhome_arch }})"
+  unarchive:
+    src: "{{ adguardhome_download_url_base }}/v{{ adguardhome_version }}/{{ adguardhome_archive }}"
+    dest: "{{ adguardhome_unpack_dir }}"
+    remote_src: yes
+    extra_opts:
+      - "--strip-components=1"
+
+- name: "Copy binary to {{ adguardhome_bin_dir }}/"
+  copy:
+    src: "{{ adguardhome_unpack_dir }}/{{ adguardhome_bin_name }}"
+    dest: "{{ adguardhome_bin_file }}"
+    mode: "755"
+    remote_src: yes
+  notify: restart adguardhome
+
+- name: Remove temporary directory
+  file:
+    path: "{{ adguardhome_unpack_dir }}"
+    state: absent

@@ -1,0 +1,12 @@
+---
+- name: Lookup latest release
+  github_release:
+    action: latest_release
+    user: AdguardTeam
+    repo: Adguardhome
+  register: adguardhome_latest_release
+
+- name: Set desired version to version of latest release
+  set_fact:
+    adguardhome_version: "{{ adguardhome_latest_release.tag | regex_replace('^v', '') }}"
+  when: adguardhome_latest_release.tag is defined

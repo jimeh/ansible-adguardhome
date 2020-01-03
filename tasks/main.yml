@@ -1,21 +1,25 @@
 ---
-- include_tasks: setup_debian.yml
+- name: Setup Debian
+  include_tasks: setup_debian.yml
   when: ansible_os_family == 'Debian'
 
-- include_tasks: setup_redhat.yml
+- name: Setup RedHat
+  include_tasks: setup_redhat.yml
   when: ansible_os_family == 'RedHat'
 
-- name: Ensure user exists
-  user:
-    name: "{{ adguardhome_user }}"
-    create_home: no
-    system: "{{ adguardhome_system_user }}"
+- name: Install python dependencies
+  pip:
+    name: github3.py
     state: present
 
 - name: Check if binary is installed
   stat:
     path: "{{ adguardhome_bin_file }}"
   register: adguardhome_binary_check
+
+- name: Check latest released version
+  include_tasks: latest_version.yml
+  when: adguardhome_version == 'latest'
 
 - name: Check version of installed binary
   shell: >-
@@ -33,38 +37,18 @@
   when: >-
     adguardhome_binary_check.stat.exists
 
-- name: Install binary
-  block:
-    - name: Ensure bin directory exists
-      file:
-        dest: "{{ adguardhome_bin_dir }}"
-        recurse: yes
-        state: directory
-    - name: Create temporary directory
-      file:
-        dest: "{{ adguardhome_unpack_dir }}"
-        recurse: yes
-        state: directory
-    - name: "Download and extract {{ adguardhome_arch }} archive"
-      unarchive:
-        src: "{{ adguardhome_download_url }}"
-        dest: "{{ adguardhome_unpack_dir }}"
-        remote_src: yes
-        extra_opts:
-          - "--strip-components=1"
-    - name: "Copy binary to {{ adguardhome_bin_dir }}/"
-      copy:
-        src: "{{ adguardhome_unpack_dir }}/{{ adguardhome_bin_name }}"
-        dest: "{{ adguardhome_bin_file }}"
-        mode: "755"
-        remote_src: yes
-    - name: Remove temporary directory
-      file:
-        path: "{{ adguardhome_unpack_dir }}"
-        state: absent
+- name: "Install binary (v{{ adguardhome_version }} / {{ adguardhome_arch }})"
+  include_tasks: install.yml
   when: >-
     adguardhome_version_check.changed
     or (not adguardhome_binary_check.stat.exists)
+
+- name: Ensure user exists
+  user:
+    name: "{{ adguardhome_user }}"
+    create_home: no
+    system: "{{ adguardhome_system_user }}"
+    state: present
 
 - name: Ensure data directory exists and has correct permissions
   file:
