@@ -84,14 +84,7 @@
   when: >-
     adguardhome_user == "root"
 
-- name: Install sytemd service
-  template:
-    src: adguardhome.service.j2
-    dest: /etc/systemd/system/adguardhome.service
-    mode: "755"
-  notify: restart adguardhome
-
-- name: Ensure service is enabled
-  service:
-    name: adguardhome
-    enabled: yes
+- name: Install systemd servicee
+  include_tasks: systemd_service.yml
+  when: >-
+    ansible_service_mgr == "systemd" and adguardhome_service_enable

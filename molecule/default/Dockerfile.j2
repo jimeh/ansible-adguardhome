@@ -19,8 +19,10 @@ RUN if [ $(command -v apt-get) ]; then \
         dnf clean all; \
     elif [ $(command -v yum) ]; then \
         yum makecache fast && \
-        yum install -y python3 python3-pip sudo yum-plugin-ovl bash \
-            net-tools && \
+        yum install -y epel-release && \
+        yum update -y && \
+        yum install -y python python-pip python-setuptools sudo \
+            yum-plugin-ovl bash net-tools && \
         sed -i 's/plugins=0/plugins=1/g' /etc/yum.conf && \
         yum clean all; \
     elif [ $(command -v zypper) ]; then \

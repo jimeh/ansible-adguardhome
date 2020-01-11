@@ -1,5 +1,5 @@
 ---
-- name: Install dependencies
+- name: Install system dependencies
   package:
     name: libcap
     state: present

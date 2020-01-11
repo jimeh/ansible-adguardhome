@@ -10,6 +10,9 @@ adguardhome_config_dir: "/opt/{{ adguardhome_service_name }}/config"
 adguardhome_data_dir: "/opt/{{ adguardhome_service_name }}"
 adguardhome_tmp_dir: /tmp
 
+adguardhome_service_enable: true
+adguardhome_service_start: true
+
 adguardhome_bin_name: AdGuardHome
 adguardhome_config_name: AdGuardHome.yml
 
@@ -20,3 +23,6 @@ adguardhome_unpack_dir: "{{ adguardhome_tmp_dir }}/AdGuardHome-{{ adguardhome_ve
 adguardhome_arch: "{% if ansible_architecture == 'x86_64' %}amd64{% elif ansible_architecture == 'aarch64' %}arm64{% else %}arm{% endif %}"
 adguardhome_archive: "AdGuardHome_linux_{{ adguardhome_arch }}.tar.gz"
 adguardhome_download_url_base: "https://github.com/AdguardTeam/AdGuardHome/releases/download"
+
+# Disable DNSStubResolver if systemd-resolved servicee is running.
+adguardhome_disable_systemd_dnsstubresolver: true

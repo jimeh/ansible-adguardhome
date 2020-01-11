@@ -1,0 +1,14 @@
+---
+- name: Disable DNSStubListener
+  ini_file:
+    path: /etc/systemd/resolved.conf
+    section: Resolve
+    option: DNSStubListener
+    value: "no"
+  notify: restart systemd-resolved
+
+- name: Symlink /etc/resolv.conf to /run/systemd/resolve/resolv.conf
+  file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link

@@ -1,0 +1,26 @@
+---
+- name: Get info about running services
+  service_facts:
+
+- name: Disable systemd-resolved's DNSStubResolver
+  include_tasks: disable_dnsstubresolver.yml
+  when: >-
+    adguardhome_disable_systemd_dnsstubresolver and
+    ansible_facts.services
+    .get("systemd-resolved.service", {})
+    .get("state") == "running"
+
+- name: Install systemd service
+  template:
+    src: adguardhome.service.j2
+    dest: "/etc/systemd/system/{{ adguardhome_service_name }}.service"
+    mode: "755"
+  register: adguardhome_systemd_unit
+  notify:
+    - reload systemd daemon
+    - restart adguardhome
+
+- name: Ensure service is enabled
+  service:
+    name: "{{ adguardhome_service_name }}"
+    enabled: yes

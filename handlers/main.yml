@@ -1,6 +1,10 @@
 ---
-- name: restart adguardhome
+- name: reload systemd daemon
   systemd:
-    name: adguardhome
+    daemon_reload: true
+
+- name: restart adguardhome
+  service:
+    name: "{{ adguardhome_service_name }}"
     state: restarted
-    daemon_reload: yes
+  when: adguardhome_service_start
