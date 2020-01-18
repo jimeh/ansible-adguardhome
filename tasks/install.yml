@@ -23,7 +23,7 @@
   copy:
     src: "{{ adguardhome_unpack_dir }}/{{ adguardhome_bin_name }}"
     dest: "{{ adguardhome_bin_file }}"
-    mode: "755"
+    mode: "0755"
     remote_src: yes
   notify: restart adguardhome
 

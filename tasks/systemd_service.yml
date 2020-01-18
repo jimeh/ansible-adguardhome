@@ -14,7 +14,7 @@
   template:
     src: adguardhome.service.j2
     dest: "/etc/systemd/system/{{ adguardhome_service_name }}.service"
-    mode: "755"
+    mode: "0664"
   register: adguardhome_systemd_unit
   notify:
     - reload systemd daemon

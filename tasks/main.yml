@@ -7,11 +7,6 @@
   include_tasks: setup_redhat.yml
   when: ansible_os_family == 'RedHat'
 
-- name: Install python dependencies
-  pip:
-    name: github3.py
-    state: present
-
 - name: Check if binary is installed
   stat:
     path: "{{ adguardhome_bin_file }}"
@@ -33,15 +28,11 @@
   changed_when: >-
     adguardhome_version_check.stdout.find('v' + adguardhome_version) == -1
   failed_when: >-
-    adguardhome_version_check.rc != 0 and adguardhome_version_check.rc != 141
+    adguardhome_version_check.rc != 0 and
+    adguardhome_version_check.rc != 1 and
+    adguardhome_version_check.rc != 141
   when: >-
     adguardhome_binary_check.stat.exists
-
-- name: "Install binary (v{{ adguardhome_version }} / {{ adguardhome_arch }})"
-  include_tasks: install.yml
-  when: >-
-    adguardhome_version_check.changed
-    or (not adguardhome_binary_check.stat.exists)
 
 - name: Ensure user exists
   user:
@@ -50,28 +41,19 @@
     system: "{{ adguardhome_system_user }}"
     state: present
 
-- name: Ensure data directory exists and has correct permissions
-  file:
-    path: "{{ adguardhome_data_dir }}"
-    owner: "{{ adguardhome_user }}"
-    group: "{{ adguardhome_group }}"
-    mode: "755"
-    recurse: yes
-    state: directory
+- name: "Install binary (v{{ adguardhome_version }} / {{ adguardhome_arch }})"
+  include_tasks: install.yml
+  when: >-
+    adguardhome_version_check.changed
+    or (not adguardhome_binary_check.stat.exists)
 
-- name: Ensure config directory exists and has correct permissions
-  file:
-    path: "{{ adguardhome_config_dir }}"
-    owner: "{{ adguardhome_user }}"
-    group: "{{ adguardhome_group }}"
-    mode: "755"
-    recurse: yes
-    state: directory
+- name: Ensure various paths exist with correct permissions
+  include_tasks: paths.yml
 
 - name: Allow binary to bind to ports lower than 1024 as a non-root user
   capabilities:
     path: "{{ adguardhome_bin_file }}"
-    capability: CAP_NET_BIND_SERVICE=+eip
+    capability: cap_net_bind_service+eip
     state: present
   when: >-
     adguardhome_user != "root"
@@ -79,7 +61,7 @@
 - name: Disallow binary to bind to ports lower than 1024 as a non-root user
   capabilities:
     path: "{{ adguardhome_bin_file }}"
-    capability: CAP_NET_BIND_SERVICE=+eip
+    capability: cap_net_bind_service+eip
     state: absent
   when: >-
     adguardhome_user == "root"

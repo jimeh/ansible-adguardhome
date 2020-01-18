@@ -1,0 +1,47 @@
+---
+- name: Ensure binary file has correct permissions
+  file:
+    path: "{{ adguardhome_bin_file }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "0755"
+
+- name: Check state of data directory
+  file:
+    path: "{{ adguardhome_data_dir }}"
+  register: adguardhome_data_directory_state
+
+- name: Ensure data directory exists and has correct permissions
+  file:
+    path: "{{ adguardhome_data_dir }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "0755"
+    recurse: yes
+    state: directory
+  when: >-
+    adguardhome_data_directory_state.owner != adguardhome_user or
+    adguardhome_data_directory_state.group != adguardhome_group or
+    adguardhome_data_directory_state.mode != "0755"
+
+- name: Ensure config directory exists and has correct permissions
+  file:
+    path: "{{ adguardhome_config_dir }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "0755"
+    recurse: no
+    state: directory
+
+- name: Check if config file exists
+  stat:
+    path: "{{ adguardhome_config_file }}"
+  register: adguardhome_config_file_state
+
+- name: Ensure config file has correct permissions
+  file:
+    path: "{{ adguardhome_config_file }}"
+    owner: "{{ adguardhome_user }}"
+    group: "{{ adguardhome_group }}"
+    mode: "0644"
+  when: adguardhome_config_file_state.stat.exists
