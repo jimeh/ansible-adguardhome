@@ -39,3 +39,5 @@ RUN if [ $(command -v apt-get) ]; then \
         xbps-install -y python sudo bash ca-certificates && \
         xbps-remove -O; \
     fi
+
+RUN if [ ! -e /sbin/init ]; then ln -s /lib/systemd/systemd /sbin/init; fi

@@ -37,7 +37,7 @@ def test_adguardhome_binary(host):
 
 
 def test_adguardhome_service(host):
-    s = host.service('adguardhome')
+    s = host.service('adguardhome.service')
 
     assert s.is_enabled
     assert s.is_running
