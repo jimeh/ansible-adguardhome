@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: ansible-adguardhome
+      vars:
+        adguardhome_user: adguard
