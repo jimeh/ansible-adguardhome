@@ -1,6 +1,7 @@
 ---
 dependencies: []
 galaxy_info:
+  role_name: adguardhome
   author: Jim Myhrberg
   description: Install AdGuard Home
   license: MIT
