@@ -1,7 +1,9 @@
 # Ansible Role: AdGuard Home
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jimeh/ansible-adguardhome/CI?style=flat) ![GitHub](https://img.shields.io/github/license/jimeh/ansible-adguardhome?style=flat) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-jimeh.adguardhome-660198?style=flat)](https://galaxy.ansible.com/jimeh/adguardhome) ![Ansible Quality Score](https://img.shields.io/ansible/quality/46001?style=flat)
+
 Install [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome) privacy
-protecting and ad-blocking DNS with Ansible.
+protecting and ad-blocking DNS server with Ansible.
 
 ## Requirements
 
