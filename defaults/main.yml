@@ -14,6 +14,10 @@ adguardhome_use_github_token: false
 # file, this can be set to something else, like "adguard" for example.
 adguardhome_user: root
 adguardhome_group: "{{ adguardhome_user }}"
+
+# When setting adguardhome_user to someething other than "root", this determines
+# if the user will be created as a system user or not. Rule of thumb is if the
+# user is logged in to by humans, it probably is not a system user.
 adguardhome_system_user: true
 
 # Default paths.
