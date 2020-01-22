@@ -25,23 +25,23 @@ what's listed above.
 Configurable role variables are all defined in `defaults/main.yml`:
 
 ```yaml
-# Version of AdGuard Home to install. If set to "latest", lookup the latest
-# release via GitHub API.
+# Version of AdGuard Home to install (without "v" prefix). If set to "latest",
+# lookup the latest release via GitHub API.
 adguardhome_version: "latest"
 
 # When desired version is "latest", use GITHUB_TOKEN environment variable when
 # looking up the latest release via GitHub's API. If you get rate limit errors
-# from GitHub's API, turni this on and set the GITHUB_TOKEN environment variable
+# from GitHub's API, turn this on and set the GITHUB_TOKEN environment variable
 # to a Personal Access Token with "repo" and "user" scopes.
 adguardhome_use_github_token: false
 
-# User to run AdGuard Home under. Must initially be "root" if no conig file is
+# User to run AdGuard Home under. Must initially be "root" if no config file is
 # on disk. After going through the setup wizard, or manually adding a config
 # file, this can be set to something else, like "adguard" for example.
 adguardhome_user: root
 adguardhome_group: "{{ adguardhome_user }}"
 
-# When setting adguardhome_user to someething other than "root", this determines
+# When setting adguardhome_user to something other than "root", this determines
 # if the user will be created as a system user or not. Rule of thumb is if the
 # user is logged in to by humans, it probably is not a system user.
 adguardhome_system_user: true
