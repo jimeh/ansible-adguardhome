@@ -1,28 +1,26 @@
 ---
-adguardhome_version: 'latest'
-adguardhome_user: root
-adguardhome_system_user: yes
-adguardhome_group: "{{ adguardhome_user }}"
+# Version of AdGuard Home to install. If set to "latest", lookup the latest
+# release via GitHub API.
+adguardhome_version: "latest"
 
-adguardhome_service_name: "adguardhome"
+# User to run AdGuard Home under. Must initially be "root" if no conig file is
+# on disk. After going through the setup wizard, or manually adding a config
+# file, this can be set to something else, like "adguard" for example.
+adguardhome_user: root
+adguardhome_group: "{{ adguardhome_user }}"
+adguardhome_system_user: true
+
+# Default paths.
 adguardhome_bin_dir: "/opt/{{ adguardhome_service_name }}/bin"
 adguardhome_config_dir: "/opt/{{ adguardhome_service_name }}/config"
+adguardhome_config_name: AdGuardHome.yml
 adguardhome_data_dir: "/opt/{{ adguardhome_service_name }}"
 adguardhome_tmp_dir: /tmp
 
+# Enable and start systemd service unit?
+adguardhome_service_name: "adguardhome"
 adguardhome_service_enable: true
 adguardhome_service_start: true
-
-adguardhome_bin_name: AdGuardHome
-adguardhome_config_name: AdGuardHome.yml
-
-adguardhome_bin_file: "{{ adguardhome_bin_dir }}/{{ adguardhome_bin_name }}"
-adguardhome_config_file: "{{ adguardhome_config_dir }}/{{ adguardhome_config_name }}"
-adguardhome_unpack_dir: "{{ adguardhome_tmp_dir }}/AdGuardHome-{{ adguardhome_version }}"
-
-adguardhome_arch: "{% if ansible_architecture == 'x86_64' %}amd64{% elif ansible_architecture == 'aarch64' %}arm64{% else %}arm{% endif %}"
-adguardhome_archive: "AdGuardHome_linux_{{ adguardhome_arch }}.tar.gz"
-adguardhome_download_url_base: "https://github.com/AdguardTeam/AdGuardHome/releases/download"
 
 # Disable DNSStubResolver if systemd-resolved servicee is running.
 adguardhome_disable_systemd_dnsstubresolver: true
