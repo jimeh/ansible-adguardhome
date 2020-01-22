@@ -9,6 +9,7 @@
     action: latest_release
     user: AdguardTeam
     repo: Adguardhome
+    token: "{% if adguardhome_use_github_token %}{{ lookup('env', 'GITHUB_TOKEN') }}{% endif %}"
   register: adguardhome_latest_release
 
 - name: Set desired version to version of latest release
