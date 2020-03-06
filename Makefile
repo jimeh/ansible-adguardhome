@@ -17,7 +17,7 @@ bootstrap:
 new-version:
 	$(if $(shell which npx),,\
 		$(error No npx not found in PATH, please install NodeJS))
-	$(if $(shell which standardx-version),,\
+	$(if $(shell which standard-version),,\
 		$(error No standard-version not found in PATH, install with: \
 			npm install -g standard-version))
 
