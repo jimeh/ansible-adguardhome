@@ -3,6 +3,11 @@
   systemd:
     daemon_reload: true
 
+- name: restart systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: restarted
+
 - name: restart adguardhome
   service:
     name: "{{ adguardhome_service_name }}"
