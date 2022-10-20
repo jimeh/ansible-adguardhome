@@ -17,7 +17,7 @@
     dest: "{{ adguardhome_unpack_dir }}"
     remote_src: yes
     extra_opts:
-      - "--strip-components=1"
+      - "--strip-components=2"
 
 - name: "Copy binary to {{ adguardhome_bin_dir }}/"
   copy:
